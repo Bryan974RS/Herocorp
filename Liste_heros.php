@@ -6,13 +6,18 @@
   <title>Super Héros — Liste</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="style.css" rel="stylesheet">
+  
   
 </head>
-<ul>
-  <li><a href="Formulaire.php">Formulaire</a></li>
-  <li><a href="Liste_heros.php">Liste des Héros</a></li>
-</ul>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+  <div class="container">
+    <a class="navbar-brand" href="#">Héros</a>
+    <ul class="navbar-nav ms-auto">
+      <li class="nav-item"><a class="nav-link" href="Formulaire.php">Formulaire</a></li>
+      <li class="nav-item"><a class="nav-link" href="Liste_heros.php">Liste des Héros (BDD)</a></li>
+    </ul>
+  </div>
+</nav>
 <body class="bg-light">
 <div class="container py-5">
 
@@ -31,9 +36,9 @@
         <thead class="table-success">
           <tr>
             <th>#</th>
-            <th>Nom</th>
+            <th>Pseudonyme</th>
             <th>Pouvoir</th>
-            <th>ville</th>
+            <th>Nationnalite</th>
           </tr>
         </thead>
         <tbody>
@@ -43,7 +48,7 @@
           ?>
             <tr>
               <td><span class="badge bg-dark"><?= htmlspecialchars($h['rank']) ?></span></td>
-              <td><?= htmlspecialchars($h['nom']) ?></td>
+              <td><?= htmlspecialchars($h['pseudonyme']) ?></td>
               <td><?= htmlspecialchars($h['pouvoir']) ?></td>
               <td><?= htmlspecialchars($h['ville']) ?></td>
               
