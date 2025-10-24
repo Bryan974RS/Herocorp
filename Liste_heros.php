@@ -1,4 +1,16 @@
-<?php require __DIR__ . '/config.php'; ?>
+<?php
+require __DIR__ . '/config.php';
+session_start();
+
+// Flash (optionnel)
+if (!isset($_SESSION['flash'])) $_SESSION['flash'] = [];
+
+// CSRF simple
+if (empty($_SESSION['csrf'])) {
+  $_SESSION['csrf'] = bin2hex(random_bytes(16));
+}
+$csrf = $_SESSION['csrf'];
+?>
 <!doctype html>
 <html lang="fr">
 <head>
@@ -6,9 +18,8 @@
   <title>Super Héros — Liste</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  
-  
 </head>
+
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
   <div class="container">
     <a class="navbar-brand" href="#">Héros</a>
@@ -18,12 +29,16 @@
     </ul>
   </div>
 </nav>
+
 <body class="bg-light">
 <div class="container py-5">
 
+  <?php foreach ($_SESSION['flash'] as $f): ?>
+    <div class="alert alert-<?= htmlspecialchars($f['type']) ?>"><?= htmlspecialchars($f['msg']) ?></div>
+  <?php endforeach; $_SESSION['flash'] = []; ?>
+
   <h1 class="mb-4 text-success fw-bold">Super Héros — Classement</h1>
 
-  <!-- Barre de recherche (client-side pour l’instant) -->
   <div class="row mb-3">
     <div class="col-md-6">
       <input id="search" type="text" class="form-control" placeholder="🔍 Rechercher (nom, pouvoir, ville)">
@@ -38,12 +53,13 @@
             <th>#</th>
             <th>Pseudonyme</th>
             <th>Pouvoir</th>
-            <th>Nationnalite</th>
+            <th>Nationalité</th>
+            <th class="text-end">Actions</th>
           </tr>
         </thead>
         <tbody>
           <?php
-            $stmt = $pdo->query("SELECT * FROM heros ORDER BY rank ASC");
+            $stmt = $pdo->query("SELECT * FROM heros ORDER BY rank ASC, id ASC");
             foreach ($stmt as $h):
           ?>
             <tr>
@@ -51,7 +67,21 @@
               <td><?= htmlspecialchars($h['pseudonyme']) ?></td>
               <td><?= htmlspecialchars($h['pouvoir']) ?></td>
               <td><?= htmlspecialchars($h['ville']) ?></td>
-              
+              <td class="text-end">
+                <!-- Modifier -->
+                <a class="btn btn-sm btn-outline-primary"
+                   href="edit_hero.php?id=<?= urlencode((string)$h['id']) ?>">
+                  Modifier
+                </a>
+
+                <!-- Supprimer -->
+                <form method="POST" action="delete_hero.php" class="d-inline"
+                      onsubmit="return confirm('Supprimer ce héros ?');">
+                  <input type="hidden" name="id" value="<?= htmlspecialchars((string)$h['id']) ?>">
+                  <input type="hidden" name="csrf" value="<?= htmlspecialchars($csrf) ?>">
+                  <button class="btn btn-sm btn-outline-danger" type="submit">Supprimer</button>
+                </form>
+              </td>
             </tr>
           <?php endforeach; ?>
         </tbody>
